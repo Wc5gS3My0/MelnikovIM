@@ -39,7 +39,7 @@ class Triangle(Figure):
     sides_count = 3
 
     def __init__(self, rgb, side):
-        super().__init__(rgb, side, side, side)  # Equilateral triangle for simplicity
+        super().__init__(rgb, side, side, side)  
         self.side = side
 
     def get_area(self):
@@ -61,21 +61,21 @@ cube1 = Cube((222, 35, 130), 6)
 triangle1 = Triangle((200, 200, 100), 10)
 
 # Проверка изменения цветов
-circle1.set_color(55, 66, 77)  # Изменится
-print(circle1.get_color())  # Ожидается: [55, 66, 77]
+circle1.set_color(55, 66, 77)  
+print(circle1.get_color())  
 
-cube1.set_color(300, 70, 15)  # Не изменится
-print(cube1.get_color())  # Ожидается: [222, 35, 130]
+cube1.set_color(300, 70, 15)  
+print(cube1.get_color())  
 
 # Проверка изменения сторон
-cube1.set_sides(6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6)  # Установим 12 сторон
-print(cube1.get_sides())  # Ожидается: [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+cube1.set_sides(6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6)  
+print(cube1.get_sides())  
 
-circle1.set_sides(15)  # Установим 1 сторону (радиус)
-print(circle1.get_sides())  # Ожидается: [15]
+circle1.set_sides(15) 
+print(circle1.get_sides())  
 
 # Проверка площади (для треугольника)
-print(triangle1.get_area())  # Ожидается: 15
+print(triangle1.get_area()) 
 
 # Проверка объема (куба)
-print(cube1.get_volume())  # Ожидается: 216
+print(cube1.get_volume())  
