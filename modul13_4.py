@@ -1,9 +1,8 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import State, StatesGroup
-import asyncio
 
-api = '***'
+api = '***'  # Замените на ваш токен
 bot = Bot(token=api)
 dp = Dispatcher(bot=bot, storage=MemoryStorage())
 
@@ -12,25 +11,29 @@ class UserState(StatesGroup):
     growth = State()
     weight = State()
 
+@dp.message_handler(commands=['start'])
+async def start_command(message: types.Message):
+    await message.answer('Добро пожаловать! Чтобы рассчитать свою норму калорий, введите "Калории" или "Calories".')
+
 @dp.message_handler(text=['Calories', 'Калории', 'Ккал'])
-async def set_age(message):
+async def set_age(message: types.Message):
     await message.answer('Введите свой возраст:')
     await UserState.age.set()
 
 @dp.message_handler(state=UserState.age)
-async def set_growth(message, state):
+async def set_growth(message: types.Message, state):
     await state.update_data(age=message.text)
     await message.answer('Введите свой рост (см):')
     await UserState.growth.set()
 
 @dp.message_handler(state=UserState.growth)
-async def set_weight(message, state):
+async def set_weight(message: types.Message, state):
     await state.update_data(growth=message.text)
     await message.answer('Введите свой вес (кг):')
     await UserState.weight.set()
 
 @dp.message_handler(state=UserState.weight)
-async def send_calories(message, state):
+async def send_calories(message: types.Message, state):
     await state.update_data(weight=message.text)
     data = await state.get_data()
 
@@ -38,18 +41,16 @@ async def send_calories(message, state):
         age = float(data['age'])
         weight = float(data['weight'])
         growth = float(data['growth'])
-    except:
-        await message.answer(f'Не могу конвертировать введенные значения в числа.')
+    except ValueError:
+        await message.answer('Не могу конвертировать введенные значения в числа. Пожалуйста, попробуйте снова.')
         await state.finish()
         return
 
-    # Упрощенный вариант формулы Миффлина-Сан Жеора:
-    # для мужчин: 10 х вес (кг) + 6,25 x рост (см) – 5 х возраст (г) + 5
+    # Формулы для расчета нормы калорий
     calories_man = 10 * weight + 6.25 * growth - 5 * age + 5
-    #для женщин: 10 x вес (кг) + 6,25 x рост (см) – 5 x возраст (г) – 161
     calories_wom = 10 * weight + 6.25 * growth - 5 * age - 161
-    await message.answer(f'Норма (муж.): {calories_man} ккал')
-    await message.answer(f'Норма (жен.): {calories_wom} ккал')
+    await message.answer(f'Норма (муж.): {calories_man:.2f} ккал')
+    await message.answer(f'Норма (жен.): {calories_wom:.2f} ккал')
     await state.finish()
 
 if __name__ == '__main__':
